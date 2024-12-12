@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+        }
+        header {
+            background: #0078d4;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        .post {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .form input, .form textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form button {
+            padding: 10px 20px;
+            background: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form button:hover {
+            background: #005bb5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Social Media</h1>
+    </header>
+    <div class="container">
+        <!-- Formularz dodawania postów -->
+        <div class="form">
+            <h2>Dodaj nowy post</h2>
+            <input type="text" id="postTitle" placeholder="Tytuł posta" />
+            <textarea id="postContent" placeholder="Treść posta"></textarea>
+            <button onclick="addPost()">Dodaj</button>
+        </div>
+        
+        <!-- Sekcja wyświetlania postów -->
+        <div id="postsContainer">
+            <p>Ładowanie postów...</p>
+        </div>
+    </div>
+    
+    <script>
+        const apiUrl = 'https://twoj-backend.onrender.com/api/posts'; // Zmień na URL swojego backendu
+
+        // Pobieranie postów z API
+        async function fetchPosts() {
+            const response = await fetch(apiUrl);
+            const posts = await response.json();
+            const container = document.getElementById('postsContainer');
+            container.innerHTML = posts.map(post => `
+                <div class="post">
+                    <h2>${post.title}</h2>
+                    <p>${post.content}</p>
+                </div>
+            `).join('');
+        }
+
+        // Dodawanie nowego posta
+        async function addPost() {
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content })
+            });
+
+            if (response.ok) {
+                alert('Post dodany!');
+                document.getElementById('postTitle').value = '';
+                document.getElementById('postContent').value = '';
+                fetchPosts();
+            } else {
+                alert('Błąd podczas dodawania posta.');
+            }
+        }
+
+        // Inicjalizacja
+        fetchPosts();
+    </script>
+</body>
+</html>
